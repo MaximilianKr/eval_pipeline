@@ -49,19 +49,18 @@ def run_experiment(model: scorer.IncrementalLMScorer, meta_data: dict, file_out:
 
 
 def main():
-    if len(sys.argv) < 5:
+    if len(sys.argv) < 4:
         print("Usage: Incorrect call. Check the documentation on how to run the evaluation.") 
         sys.exit(1)
 
-    model_name, revision, quantization, dataset, file_out = sys.argv[1:6]
+    model_name, revision, dataset, file_out = sys.argv[1:5]
 
     # minicons IncrementalLMScorer
-    model = initialize_model(model_name, revision, quantization)
+    model = initialize_model(model_name, revision)
 
     meta_data = {
         "model": model_name,
         "revision": revision,
-        "quantization": quantization,
         "dataset": dataset,
         "timestamp": timestamp()
     }
