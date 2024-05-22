@@ -92,6 +92,8 @@ bash run_eval.sh connectives allenai/OLMo-1B-hf
 
 ## ToDo
 
+- [ ] add test coverage / `pytest`
+
 - [ ] test [HPC cluster](https://docs.hpc.uni-potsdam.de/overview/index.html) for larger models
   - `pythia-6.9B`, `pythia-12B`, `pythia-6.9B-deduped`, `pythia-12B-deduped`
     - at various checkpoints
@@ -105,9 +107,16 @@ bash run_eval.sh connectives allenai/OLMo-1B-hf
 
 - [ ] extend visualization of results (notebook)
 
-- [ ] test batching - only single instances passed to the model, possible improvements achievable (especially for larger models)
+- [ ] handle batching for minicons?  possible improvements achievable (esp. larger models)
 
 - [ ] add OpenAI support as upper bound for commercial models?
+
+- [ ] analyze contextual word embeddings?
+
+- [ ] test other open models with checkpoints?
+  - `togethercomputer/RedPajama-INCITE-7B-Base`
+  - `TinyLlama/TinyLlama-1.1B`
+  - `Zyphra/Zamba-7b`
 
 ## Author
 
