@@ -1,0 +1,30 @@
+name: eval_pipeline
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - accelerate
+  - ipykernel
+  - ipywidgets
+  - matplotlib
+  - numpy
+  - openai
+  - pandas
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=12.1
+  - scipy
+  - seaborn
+  - sentencepiece
+  - tiktoken
+  - tqdm
+  - pip
+  - pip:
+      - transformers
+      - ai2-olmo
+      - bitsandbytes
+      - minicons
