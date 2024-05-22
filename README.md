@@ -4,16 +4,18 @@ Prototyping an evaluation pipeline for language models on discourse connectives.
 
 ## Overview
 
-- [Models](#models)
-  - [EleutherAI/Pythia](#eleutherai-pythia)
-  - [AI2/OLMo](#ai2-olmo)
-- [Setup](#setup)
-  - [venv](#venv)
-  - [conda](#conda)
-- [Evaluation materials](#evaluation-materials)
-- [Evaluation scripts](#evaluation-scripts)
-- [ToDo](#todo)
-- [Author](#author)
+- [Eval Pipeline](#eval-pipeline)
+  - [Overview](#overview)
+  - [Models](#models)
+    - [EleutherAI-Pythia](#eleutherai-pythia)
+    - [AI2-OLMo](#ai2-olmo)
+  - [Setup](#setup)
+    - [venv](#venv)
+    - [conda](#conda)
+  - [Evaluation materials](#evaluation-materials)
+  - [Running experiments](#running-experiments)
+  - [ToDo](#todo)
+  - [Author](#author)
 
 ## Models
 
@@ -76,24 +78,28 @@ conda activate pipe
 >Evaluation datasets can be found in the [`datasets`](datasets) folder.
 >Please refer to the README in that folder for more details on how the stimuli were assembled and formatted.
 
-## Evaluation scripts
+## Running experiments
 
-### Pythia & OLMo
-
-- **ToDo**: separate running experiments from running evals
+Run the bash script and specify the [dataset](data/README.md), `model` and optionally `revision`. [^1]
 
 ```shell
 # Template
 bash run_eval.sh {dataset} {model} {optional: revision}
 ```
 
+- [dtfit](data/dtfit/README.md)
+
 ```shell
-bash run_eval.sh dtfit EleutherAI/pythia-140m main
+bash run_eval.sh dtfit EleutherAI/pythia-14m
 ```
 
-- `revision`
+- [connectives](data/connectives/README.md)
 
-  - `main` corresponds to the final model checkpoint for all available models. Check either [Pythia](https://huggingface.co/collections/EleutherAI/pythia-scaling-suite-64fb5dfa8c21ebb3db7ad2e1) or [OLMo](https://huggingface.co/collections/allenai/olmo-suite-65aeaae8fe5b6b2122b46778) suites on Huggingface, select a model and branch to access different (earlier) checkpoints.
+```shell
+bash run_eval.sh connectives allenai/OLMo-1B-hf
+```
+
+[^1]: `main` as default corresponds to the final model checkpoint for all available models. Check either [Pythia](https://huggingface.co/collections/EleutherAI/pythia-scaling-suite-64fb5dfa8c21ebb3db7ad2e1) or [OLMo](https://huggingface.co/collections/allenai/olmo-suite-65aeaae8fe5b6b2122b46778) suites on Huggingface, select a model and branch to access different (earlier) checkpoints.
 
 ## ToDo
 
