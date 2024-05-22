@@ -1,4 +1,4 @@
-name: eval_pipeline
+name: pipe
 channels:
   - pytorch
   - nvidia
@@ -11,20 +11,14 @@ dependencies:
   - ipywidgets
   - matplotlib
   - numpy
-  - openai
   - pandas
   - pytorch
   - torchvision
   - torchaudio
   - pytorch-cuda=12.1
-  - scipy
-  - seaborn
-  - sentencepiece
-  - tiktoken
   - tqdm
+  - transformers
   - pip
   - pip:
-      - transformers
-      - ai2-olmo
       - bitsandbytes
       - minicons

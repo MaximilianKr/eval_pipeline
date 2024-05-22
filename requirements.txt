@@ -1,16 +1,10 @@
 accelerate
-ai2-olmo
 bitsandbytes
 ipykernel
 ipywidgets
 matplotlib
 numpy
-openai
 pandas
-scipy
-seaborn
-sentencepiece
-tiktoken
 torch
 torchvision
 torchaudio
