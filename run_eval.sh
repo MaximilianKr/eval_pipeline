@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Template
-# bash run_eval.sh {dataset} {model} {optional: revision} {optional: quantization}
+# bash run_eval.sh {dataset} {model} {optional: revision}
 
 # Required, e.q., "dtfit"
 DATASET=$1
