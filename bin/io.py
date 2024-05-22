@@ -20,9 +20,6 @@ def initialize_model(model_name: str, revision: str):
     else:
         device = torch.device("cpu")
         print("Using CPU (CUDA unvailable); adjust your expectations") 
-    # TODO: add backends: 'togethercomputer/RedPajama-INCITE-7B-Base'
-    #                     'TinyLlama/TinyLlama-1.1B'
-    #                     'Zyphra/Zamba-7b'
     if "pythia" or "allenai" in model_name:
         model = scorer.IncrementalLMScorer(
             model=model_name, 
