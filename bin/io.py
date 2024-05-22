@@ -13,7 +13,7 @@ def dict2json(d: dict, out_file: str):
     with open(out_file, "w") as fp:
         json.dump(d, fp, indent=2)
 
-def initialize_model(model_name: str, revision: str, quantization: str):
+def initialize_model(model_name: str, revision: str):
     if torch.cuda.is_available():
         device = torch.device("cuda")
         print("Set device to CUDA")
@@ -24,7 +24,6 @@ def initialize_model(model_name: str, revision: str, quantization: str):
     #                     'TinyLlama/TinyLlama-1.1B'
     #                     'Zyphra/Zamba-7b'
     if "pythia" or "allenai" in model_name:
-        # TODO: fix quantization with minicons?
         model = scorer.IncrementalLMScorer(
             model=model_name, 
             device=device, 

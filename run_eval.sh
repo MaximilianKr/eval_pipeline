@@ -10,18 +10,8 @@ DATASET="dtfit"
 MODEL=$1
 
 # Optional, default "main" / see intermediate checkpoints for models
-REVISION=${2:-"main"}
-
 # TODO: Validate revision input?
-
-# Optional, default "full" precision, possible "4bit" or "8bit"
-QUANTIZATION=${3:-"full"}
-
-# Validate quantization input
-if [[ "$QUANTIZATION" != "full" && "$QUANTIZATION" != "4bit" && "$QUANTIZATION" != "8bit" ]]; then
-    echo "Error: QUANTIZATION must be either unspecified (defaults to full precision), '4bit', or '8bit'."
-    exit 1
-fi
+REVISION=${2:-"main"}
 
 # Extract the second part of the model name
 if [[ $MODEL == */* ]]; then
@@ -35,15 +25,18 @@ fi
 SCRIPT_DIR=$(dirname "$0")
 
 # Construct path relative to the script's location
-PYTHON_SCRIPT="$SCRIPT_DIR/bin/run_eval.py"
+PYTHON_SCRIPT="$SCRIPT_DIR/bin/run_experiment.py"
 
 RESULTDIR="results/$DATASET"
 mkdir -p $RESULTDIR
 
-FILE_OUT="$RESULTDIR/${SAFEMODEL}_${REVISION}_${QUANTIZATION}.json"
+FILE_OUT="$RESULTDIR/${SAFEMODEL}_${REVISION}.json"
 echo "Results will be saved to: $FILE_OUT"
 
 # Set PYTHONPATH to include the parent directory
 export PYTHONPATH=$SCRIPT_DIR
 
-python "$PYTHON_SCRIPT" $MODEL $REVISION $QUANTIZATION $DATASET $FILE_OUT
+# Run experiment
+python "$PYTHON_SCRIPT" $MODEL $REVISION $DATASET $FILE_OUT
+
+# Run eval?
