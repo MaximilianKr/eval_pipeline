@@ -84,11 +84,11 @@ conda activate pipe
 
 ```shell
 # Template
-bash run_eval.sh {dataset} {model} {optional: revision} {optional: quantization}
+bash run_eval.sh {dataset} {model} {optional: revision}
 ```
 
 ```shell
-bash run_eval.sh EleutherAI/pythia-140m main
+bash run_eval.sh dtfit EleutherAI/pythia-140m main
 ```
 
 - `revision`
