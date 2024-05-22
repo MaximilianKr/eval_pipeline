@@ -71,7 +71,7 @@ conda activate pipe
 
 ## Evaluation materials
 
-- **ToDo**
+- **ToDo**: add datasets, preprocessing, documentation, sources
 
 >Evaluation datasets can be found in the [`datasets`](datasets) folder.
 >Please refer to the README in that folder for more details on how the stimuli were assembled and formatted.
@@ -80,7 +80,7 @@ conda activate pipe
 
 ### Pythia & OLMo
 
-- **ToDo**
+- **ToDo**: separate running experiments from running evals
 
 ```shell
 # Template
@@ -88,34 +88,24 @@ bash run_eval.sh {dataset} {model} {optional: revision} {optional: quantization}
 ```
 
 ```shell
-bash run_eval.sh EleutherAI/pythia-70m-deduped step3000 8bit
+bash run_eval.sh EleutherAI/pythia-140m main
 ```
 
 - `revision`
 
-  - `main` corresponds to the final model checkpoint. Must be set when using quantization. Check either [Pythia](https://huggingface.co/EleutherAI/pythia-70m-deduped) or [OLMo](https://huggingface.co/allenai/OLMo-1.7-7B-hf) model cards on Huggingface for details on how to access different (earlier) checkpoints.
-
-- `quantization`
-  
-  - `8bit` or `4bit`, running with less precision also requires less VRAM. Loading checkpoint shards can take longer than with full precision (*quantized OLMo models load fine, Pythia models very slow*). Must set revision to use (e.g., use `main`).
-
-### OpenAI
-
-- **ToDo** (optional)
-
-There are still 2 base models available via *OpenAI*'s API (`babbage-002`/replacement for GPT-3 `ada` and `babbage` base models and `davinci-002`/replacement for GPT-3 `curie` and `davinci` base models).
-
-For more details on the base models still available read the [official documentation](https://platform.openai.com/docs/models/gpt-base).
+  - `main` corresponds to the final model checkpoint for all available models. Check either [Pythia](https://huggingface.co/collections/EleutherAI/pythia-scaling-suite-64fb5dfa8c21ebb3db7ad2e1) or [OLMo](https://huggingface.co/collections/allenai/olmo-suite-65aeaae8fe5b6b2122b46778) suites on Huggingface, select a model and branch to access different (earlier) checkpoints.
 
 ## ToDo
 
-- [ ] test [minicons](https://github.com/kanishkamisra/minicons) implementation
+- [ ] separate running experiment from running evaluation of results
 
 - [ ] visualize results / use notebook
 
-- [ ] add batching support - only single instances passed to the model, possible improvements achievable (especially for larger models)
+- [ ] add datasets and corresponding documentation
 
-- [ ] add OpenAI support?
+- [ ] test batching - only single instances passed to the model, possible improvements achievable (especially for larger models)
+
+- [ ] add OpenAI support as upper bound for commercial models?
 
 ## Author
 
