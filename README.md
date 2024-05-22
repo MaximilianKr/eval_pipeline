@@ -73,10 +73,8 @@ conda activate pipe
 
 ## Evaluation materials
 
-- **ToDo**: add datasets, preprocessing, documentation, sources
-
->Evaluation datasets can be found in the [`datasets`](datasets) folder.
->Please refer to the README in that folder for more details on how the stimuli were assembled and formatted.
+Evaluation datasets can be found in the [`data`](data) folder.
+Please refer to the [README.md](data/README.md) in that folder for more details on how the stimuli were assembled and formatted.
 
 ## Running experiments
 
