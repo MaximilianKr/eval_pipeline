@@ -6,7 +6,7 @@ For example:
 
 - The actor won the {award=*good*, battle=*bad*}
 
-The code, data and documentation inside this folder was forked from [Hu, Jennifer & Levy, Roger (2023)](https://github.com/jennhu/metalinguistic-prompting). Please refer to their original repository for additional information. 
+The code, data and documentation inside this folder was forked from [Hu, Jennifer & Levy, Roger (2023)](https://github.com/jennhu/metalinguistic-prompting). Please refer to their original repository for additional information.
 
 The content of the original [README.md](https://github.com/jennhu/metalinguistic-prompting/tree/master/datasets/exp2/dtfit) is attached below.
 
