@@ -1,6 +1,6 @@
 # Eval Pipeline
 
-Prototyping an evaluation pipeline for language models on discourse connectives. 
+Prototyping an evaluation pipeline for language models on discourse connectives.
 
 ## Overview
 
@@ -66,7 +66,7 @@ conda env create -f environment.yml
 ```
 
 ```shell
-conda activate eval_pipeline
+conda activate pipe
 ```
 
 ## Evaluation materials
