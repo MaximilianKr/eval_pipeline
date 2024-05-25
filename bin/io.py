@@ -1,26 +1,54 @@
 import json
-from time import gmtime, strftime
+from datetime import datetime
 from minicons import scorer
 import torch
 
 torch.set_grad_enabled(False)
 
 
-def timestamp():
-    return strftime("%Y-%m-%d %H:%M:%S", gmtime())
+def timestamp() -> str:
+    """
+    Returns the current UTC timestamp as a formatted string.
+    """
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-def dict2json(d: dict, out_file: str):
+
+def dict2json(d: dict, out_file: str) -> None:
+    """
+    Writes a dictionary to a JSON file.
+
+    Args:
+        d (dict): The dictionary to write.
+        out_file (str): The path to the output file.
+    """
     with open(out_file, "w") as fp:
         json.dump(d, fp, indent=2)
 
-def initialize_model(model_name: str, revision: str):
+
+def initialize_model(model_name: str, revision: str) -> scorer.IncrementalLMScorer:
+    """
+    Initializes the model for scoring. Currently supported model suites are
+        - EleutherAI/pythia-*
+        - allenai/OLMo-*-hf (only Huggingface variants)
+    Consult the documentation to access the available models from each suite.
+
+    Args:
+        model_name (str): The name of the model.
+        revision (str): The revision of the model.
+
+    Returns:
+        scorer.IncrementalLMScorer: The initialized model scorer.
+    
+    Raises:
+        ValueError: If the model name is not supported.
+    """
     if torch.cuda.is_available():
         device = torch.device("cuda")
         print("Set device to CUDA")
     else:
         device = torch.device("cpu")
         print("Using CPU (CUDA unvailable); adjust your expectations") 
-    if "pythia" or "allenai" in model_name:
+    if "pythia" in model_name or "allenai" in model_name:
         model = scorer.IncrementalLMScorer(
             model=model_name, 
             device=device, 
