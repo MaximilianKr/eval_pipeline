@@ -1,0 +1,14 @@
+name: dockerenv
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - accelerate
+  - numpy
+  - pandas
+  - tqdm
+  - transformers
+  - pip
+  - pip:
+      - minicons
