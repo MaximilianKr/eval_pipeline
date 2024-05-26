@@ -8,7 +8,7 @@ torch.set_grad_enabled(False)
 
 def timestamp() -> str:
     """
-    Returns the current UTC timestamp as a formatted string.
+    Returns the local current timestamp as a formatted string.
     """
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
