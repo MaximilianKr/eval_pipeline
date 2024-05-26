@@ -100,14 +100,16 @@ bash run_eval.sh connectives allenai/OLMo-1B-hf
   - `OLMo-1.7-7B-hf`
     - at various checkpoints
 
-- [ ] test `OLMo` model checkpoints for non-`hf` version?
+- [ ] test `OLMo` model checkpoints for non-`hf` versions?
   - requires additional code
+  - `OLMo-1B-hf`, `OLMo-7B-hf`
 
 - [ ] add more datasets and corresponding documentation
+  - [DisSent](https://github.com/windweller/DisExtract)
 
 - [ ] extend visualization of results (notebook)
 
-- [ ] handle batching for minicons?  possible improvements achievable (esp. larger models)
+- [ ] handle batching for minicons? possible improvements achievable (esp. larger models)
 
 - [ ] add OpenAI support as upper bound for commercial models?
 
@@ -117,6 +119,8 @@ bash run_eval.sh connectives allenai/OLMo-1B-hf
   - `togethercomputer/RedPajama-INCITE-7B-Base`
   - `TinyLlama/TinyLlama-1.1B`
   - `Zyphra/Zamba-7b`
+  - [Ablation Models](https://huggingface.co/collections/HuggingFaceFW/ablation-models-662457b0d213e8c14fe47f32)?
+    - checkpoints available for different common datasets for pretraining
 
 ## Author
 
