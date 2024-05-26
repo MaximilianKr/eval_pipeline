@@ -1,5 +1,6 @@
 # Use the official NVIDIA CUDA base image
-FROM nvcr.io/nvidia/pytorch:24.05-py3
+# FROM nvcr.io/nvidia/pytorch:24.05-py3
+FROM huggingface/transformers-pytorch-gpu
 
 # Set the working directory in the container
 WORKDIR /app
