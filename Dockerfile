@@ -1,28 +1,38 @@
-# Use the official NVIDIA CUDA base image
-# FROM nvcr.io/nvidia/pytorch:24.05-py3
-FROM huggingface/transformers-pytorch-gpu
+# Use official PyTorch + CUDA base image
+# Python 3.10.14 pre-installed
+FROM pytorch/pytorch:2.3.0-cuda12.1-cudnn8-runtime
 
-# Set the working directory in the container
+# Set environment variables for non-interactive apt-get install
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install essential system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    git \
+    wget \
+    && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
 WORKDIR /app
 
-# Install Miniconda and Git
-RUN apt-get update && apt-get install -y wget git && \
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
-    bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/conda && \
-    rm Miniconda3-latest-Linux-x86_64.sh && \
-    /opt/conda/bin/conda init bash
-
-# Add Conda to the PATH
-ENV PATH=/opt/conda/bin:$PATH
-
-# Clone the Git repository
+# Clone the application repository
 RUN git clone https://github.com/MaximilianKr/eval_pipeline.git /app
 
-# Copy the environment.yml file into the container
-COPY dockerenv.yml /app/dockerenv.yml
+# Install necessary dependencies into the base Conda environment
+RUN conda install -n base -c conda-forge pip \
+    transformers accelerate tqdm pandas pillow requests urllib3 openai tenacity && \
+    pip install minicons --no-deps && \
+    conda clean -a -y
 
-# Create the Conda environment from environment.yml
-RUN conda env create -f /app/dockerenv.yml
+# Ensure the default shell is Bash and source the base environment
+SHELL ["/bin/bash", "-c"]
 
-# Specify the command to start a shell
+# Expose port 80
+EXPOSE 80
+
+# Start a shell by default
 CMD ["/bin/bash"]
+
+# Test if container runs properly
+# python -c "import torch; print(torch.cuda.is_available())"

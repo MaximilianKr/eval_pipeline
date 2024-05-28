@@ -94,6 +94,8 @@ bash run_eval.sh connectives allenai/OLMo-1B-hf
 
 - [ ] add test coverage / `pytest`
 
+- [ ] change bash scripts to `argparse` interface
+
 - [ ] test [HPC cluster](https://docs.hpc.uni-potsdam.de/overview/index.html) for larger models
   - `pythia-6.9B`, `pythia-12B`, `pythia-6.9B-deduped`, `pythia-12B-deduped`
     - at various checkpoints
