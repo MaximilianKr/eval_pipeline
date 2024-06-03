@@ -101,6 +101,7 @@ bash run_eval.sh connectives allenai/OLMo-1B-hf
     - at various checkpoints
   - `OLMo-1.7-7B-hf`
     - at various checkpoints
+  - [model parallelism](https://huggingface.co/docs/transformers/v4.13.0/en/parallelism) for V100 nodes?
 
 - [ ] test `OLMo` model checkpoints for non-`hf` versions?
   - requires additional code
@@ -111,11 +112,9 @@ bash run_eval.sh connectives allenai/OLMo-1B-hf
 
 - [ ] extend visualization of results (notebook)
 
-- [ ] handle batching for minicons? possible improvements achievable (esp. larger models)
-
 - [ ] add OpenAI support as upper bound for commercial models?
 
-- [ ] analyze contextual word embeddings?
+- [ ] extract & analyze [contextual word embeddings](https://github.com/kanishkamisra/minicons/blob/master/examples/word_representations.md)
 
 - [ ] test other open models with checkpoints?
   - `togethercomputer/RedPajama-INCITE-7B-Base`
