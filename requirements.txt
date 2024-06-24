@@ -5,6 +5,7 @@ ipywidgets
 matplotlib
 numpy
 pandas
+pytest
 torch
 torchvision
 torchaudio
