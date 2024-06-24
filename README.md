@@ -29,7 +29,8 @@ This makes it possible to test for emerging capabilities across parameter scale 
 
 ## Setup
 
-- requires GPU with `cuda >= 12.1` support (smaller models can run on CPU, but not recommended)
+- tested on Python `3.12.x`, `3.11.x`, `3.10.x`
+- requires GPU with `CUDA >= 12.1` support (smaller models can run on CPU, but not recommended)
 
 ### venv
 
