@@ -1,10 +1,10 @@
-# Eval Pipeline
+# Minimal Pairs Eval Pipeline
 
-Prototyping an evaluation pipeline for language models on discourse connectives.
+An evaluation pipeline for autoregressive language models based on minimal pairs using logprobs.
 
 ## Overview
 
-- [Eval Pipeline](#eval-pipeline)
+- [Minimal Pairs Eval Pipeline](#minimal-pairs-eval-pipeline)
   - [Overview](#overview)
   - [Models](#models)
   - [Setup](#setup)
@@ -24,7 +24,8 @@ Prototyping an evaluation pipeline for language models on discourse connectives.
 | [Technical Report](https://arxiv.org/abs/2402.00838) | [Technical Report](https://arxiv.org/abs/2304.01373) |
 | [Website](https://allenai.org/) | [Website](https://www.eleuther.ai/) |
 
-Both models were released in different parameter sizes at different checkpoints / training steps (revisions).
+Both models were released in different parameter sizes at different intermediate training checkpoints (revisions).
+This makes it possible to test for emerging capabilities across parameter scale and training time.
 
 ## Setup
 
@@ -65,50 +66,41 @@ conda activate pipe
 ## Datasets for evaluation
 
 The datasets for evaluation can be found in the [`data`](data) folder.
-Please refer to the [README.md](data/README.md) in that folder for more details on how the stimuli were assembled and formatted. Additional datasets can easily be integrated.
+Additional datasets can easily be integrated and tested.
+Please refer to the [README.md](data/README.md) in the folder for more details.
 
 ## Running experiments
 
-Run the bash script and specify the [dataset](data/README.md), `model` and optionally `revision` (defaults to `main`, final checkpoint for all models).
+Run the Python script and specify the [dataset](data/README.md), `model` and
+optionally `revision` (defaults to `main`, final checkpoint for all models).
 
-To access different checkpoints, check either [Pythia](https://huggingface.co/collections/EleutherAI/pythia-scaling-suite-64fb5dfa8c21ebb3db7ad2e1) or [OLMo](https://huggingface.co/collections/allenai/olmo-suite-65aeaae8fe5b6b2122b46778) suites on Huggingface, select a model and choose a corresponding branch.
+To access different intermediate training checkpoints (revisions), check either [Pythia](https://huggingface.co/collections/EleutherAI/pythia-scaling-suite-64fb5dfa8c21ebb3db7ad2e1) or [OLMo](https://huggingface.co/collections/allenai/olmo-suite-65aeaae8fe5b6b2122b46778) suites on Huggingface, select a model's *Files and versions* and choose a corresponding branch.
 
 ```shell
 # Template
-bash run_eval.sh {dataset} {model} {optional: revision}
+python run_eval.py {dataset} {model} {optional: revision}
 ```
 
 - [dtfit](data/dtfit/README.md)
 
-```shell
-bash run_eval.sh dtfit EleutherAI/pythia-14m
-```
+  ```shell
+  python run_eval.py dtfit EleutherAI/pythia-14m
+  ```
 
-- [connectives](data/connectives/README.md)
+- [connectives](data/connectives/README.md) (*work in progress*)
 
-```shell
-bash run_eval.sh connectives allenai/OLMo-1B-hf
-```
+  ```shell
+  python run_eval.py connectives allenai/OLMo-1B-hf
+  ```
 
 ## ToDo
 
 - [ ] add test coverage / `pytest`
 
-- [ ] change bash scripts to `argparse` interface
-
-- [ ] test [HPC cluster](https://docs.hpc.uni-potsdam.de/overview/index.html) for larger models
-  - `pythia-6.9B`, `pythia-12B`, `pythia-6.9B-deduped`, `pythia-12B-deduped`
-    - at various checkpoints
-  - `OLMo-1.7-7B-hf`
-    - at various checkpoints
-  - [model parallelism](https://huggingface.co/docs/transformers/v4.13.0/en/parallelism) for V100 nodes?
-
-- [ ] test `OLMo` model checkpoints for non-`hf` versions?
-  - requires additional code
-  - `OLMo-1B-hf`, `OLMo-7B-hf`
-
 - [ ] add more datasets and corresponding documentation
   - [DisSent](https://github.com/windweller/DisExtract)
+
+- [ ] add calculation for results (acc, prec, rec, f1)
 
 - [ ] extend visualization of results (notebook)
 
@@ -127,4 +119,4 @@ bash run_eval.sh connectives allenai/OLMo-1B-hf
 
 - Maximilian Krupop
 
-[Back to Top](#eval-pipeline)
+[Back to Top](#minimal-pairs-eval-pipeline)
