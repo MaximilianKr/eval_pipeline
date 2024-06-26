@@ -1,12 +1,19 @@
+"""
+Module for initializing models and handling JSON operations.
+
+This module provides utility functions to initialize language models
+for scoring and to handle JSON operations such as writing dictionaries
+to JSON files.
+"""
+
 import json
 from datetime import datetime
 from minicons import scorer
 import torch
 
-
-seed = 42
-torch.manual_seed(seed)
-torch.cuda.manual_seed(seed)
+SEED = 42
+torch.manual_seed(SEED)
+torch.cuda.manual_seed(SEED)
 torch.backends.cudnn.deterministic = True
 torch.set_grad_enabled(False)
 
@@ -26,7 +33,7 @@ def dict2json(d: dict, out_file: str) -> None:
         d (dict): The dictionary to write.
         out_file (str): The path to the output file.
     """
-    with open(out_file, "w") as fp:
+    with open(out_file, "w", encoding="utf-8") as fp:
         json.dump(d, fp, indent=2)
 
 
@@ -43,7 +50,7 @@ def initialize_model(model_name: str, revision: str) -> scorer.IncrementalLMScor
 
     Returns:
         scorer.IncrementalLMScorer: The initialized model scorer.
-    
+
     Raises:
         ValueError: If the model name is not supported.
     """
@@ -52,16 +59,13 @@ def initialize_model(model_name: str, revision: str) -> scorer.IncrementalLMScor
         print("Set device to CUDA")
     else:
         device = torch.device("cpu")
-        print("Using CPU (CUDA unvailable); adjust your expectations") 
+        print("Using CPU (CUDA unavailable); adjust your expectations")
+
     if "pythia" in model_name or "allenai" in model_name:
         model = scorer.IncrementalLMScorer(
-            model=model_name, 
-            device=device, 
-            revision=revision
-            )
-    else:
-        raise ValueError(
-            f"Model not (yet) supported! (Your model: {model_name})"
+            model=model_name, device=device, revision=revision
         )
-    
+    else:
+        raise ValueError(f"Model not (yet) supported! (Your model: {model_name})")
+
     return model

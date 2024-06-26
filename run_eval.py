@@ -1,3 +1,12 @@
+"""
+Module for running evaluation scripts with specified dataset and model.
+
+This script takes command line arguments for the dataset, model, and optional 
+revision, constructs the necessary paths, checks if the dataset directory 
+exists, sets up the environment variables, and runs the experiment using the
+provided arguments.
+"""
+
 import argparse
 import os
 import subprocess
@@ -77,7 +86,9 @@ def main() -> None:
     env["PYTHONPATH"] = script_dir
 
     subprocess.run(
-        ["python", python_script, model, revision, dataset, file_out], env=env
+        ["python", python_script, model, revision, dataset, file_out],
+        env=env,
+        check=True,
     )
 
 

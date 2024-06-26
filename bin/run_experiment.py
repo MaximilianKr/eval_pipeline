@@ -1,8 +1,15 @@
+"""
+Module to run experiments for evaluating language models.
+
+This module provides functions to run experiments using a specified language 
+model on a dataset, and save the results to a JSON file with metadata.
+"""
+
 import sys
 import pandas as pd
 from tqdm import tqdm
-from bin.io import initialize_model, timestamp, dict2json
 from minicons import scorer
+from bin.io import initialize_model, timestamp, dict2json
 
 
 def run_experiment(
