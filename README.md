@@ -1,6 +1,10 @@
 # Minimal Pairs Eval Pipeline
 
-An evaluation pipeline for autoregressive language models based on minimal pairs using logprobs.
+An evaluation pipeline for autoregressive language models using minimal pairs and log probabilities.
+
+This pipeline evaluates language models by reading out the conditional log probabilities for minimal pairs of sentences. In each pair, one sentence is considered *correct*, while the other contains a minimal violation. The model is expected to assign a lower probability to the *incorrect* sentence.
+
+By using a sufficient number of test items targeting specific linguistic phenomena, the accuracy of the model’s probability assignments provides an indication of its linguistic capabilities and understanding of these phenomena. Assessing models at different training checkpoints should give an estimate whether these capabilities emerge during pre-training.
 
 ## Overview
 
@@ -96,25 +100,29 @@ python run_eval.py {dataset} {model} {optional: revision}
 
 ## ToDo
 
-- [ ] add test coverage / `pytest`
+- [ ] **General**
+  - [ ] add test coverage / `pytest`
 
-- [ ] add more datasets and corresponding documentation
-  - [DisSent](https://github.com/windweller/DisExtract)
+- [ ] **Data**
+  - [ ] add more datasets and corresponding documentation
+    - [DisSent](https://github.com/windweller/DisExtract)
+    - [WinoGrande](https://leaderboard.allenai.org/winogrande/submissions/get-started)
+  - [ ] add *inter-* and *intra*-sentential conditions
+  - [ ] add phenomena under question to datasets (what is accuracy actually based on?)
 
-- [ ] add calculation for results (acc, prec, rec, f1)
+- [ ] **Results**
+  - [ ] add calculation for results (acc, prec, rec, f1)
+  - [ ] extend visualization of results (notebook)
 
-- [ ] extend visualization of results (notebook)
-
-- [ ] add OpenAI support as upper bound for commercial models?
-
-- [ ] extract & analyze [contextual word embeddings](https://github.com/kanishkamisra/minicons/blob/master/examples/word_representations.md)
-
-- [ ] test other open models with checkpoints?
-  - `togethercomputer/RedPajama-INCITE-7B-Base`
-  - `TinyLlama/TinyLlama-1.1B`
-  - `Zyphra/Zamba-7b`
-  - [Ablation Models](https://huggingface.co/collections/HuggingFaceFW/ablation-models-662457b0d213e8c14fe47f32)?
-    - checkpoints available for different common datasets for pretraining
+- [ ] **Optional** (low priority)
+  - [ ] add OpenAI support as upper bound for commercial models
+  - [ ] extract & analyze [contextual word embeddings](https://github.com/kanishkamisra/minicons/blob/master/examples/word_representations.md)
+  - [ ] test other open models with checkpoints?
+    - `togethercomputer/RedPajama-INCITE-7B-Base`
+    - `TinyLlama/TinyLlama-1.1B`
+    - `Zyphra/Zamba-7b`
+    - [Ablation Models](https://huggingface.co/collections/HuggingFaceFW/ablation-models-662457b0d213e8c14fe47f32)?
+      - checkpoints available for different common datasets for pretraining
 
 ## Author
 
