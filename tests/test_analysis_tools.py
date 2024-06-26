@@ -20,7 +20,7 @@ from bin.analysis_tools import (
 @pytest.fixture
 def mock_json_data():
     """
-    Fixture to mock JSON data from a sucessful model eval run.
+    Fixture to mock JSON data from a sucessful model eval.
     """
     return {
         "results": [
@@ -84,7 +84,7 @@ def test_read_all_results(
     mock_read_data_from_folder,
     mock_path,
     mock_listdir,
-    mock_json_data,
+    mock_json_data,  # pylint: disable=redefined-outer-name
 ):
     """
     Test reading all results from base folder and computing accuracy metrics.

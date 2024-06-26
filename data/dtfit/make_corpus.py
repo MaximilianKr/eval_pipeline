@@ -8,7 +8,7 @@ import pandas as pd
 df = pd.read_csv("clean_DTFit_human_dat.csv")
 
 
-def create_corpus(df):
+def create_corpus(corpus_csv: pd.DataFrame) -> pd.DataFrame:
     """
     Processes the DataFrame to create a structured corpus.
 
@@ -19,8 +19,8 @@ def create_corpus(df):
         pd.DataFrame: A DataFrame containing the structured corpus.
     """
     data = []
-    for item_num in sorted(df.ItemNum.unique()):
-        rows = df[df.ItemNum == item_num]
+    for item_num in sorted(corpus_csv.ItemNum.unique()):
+        rows = corpus_csv[corpus_csv.ItemNum == item_num]
         good = rows[rows.Plausibility == "Plausible"].squeeze()
         bad = rows[rows.Plausibility == "Implausible"].squeeze()
 
