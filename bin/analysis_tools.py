@@ -1,6 +1,14 @@
+"""
+Module for analyzing model evaluation results.
+
+This module contains functions to read JSON data from folders,
+compute accuracy metrics, and plot the results.
+"""
+
 import json
-import pandas as pd
 from os import listdir, path
+
+import pandas as pd
 import matplotlib.pyplot as plt
 
 
@@ -22,7 +30,7 @@ def read_data_from_folder(folder_path) -> pd.DataFrame:
 
     for file_name in files_to_read:
         file_path = path.join(folder_path, file_name)
-        with open(file_path, "r") as file:
+        with open(file_path, "r", encoding="utf-8") as file:
             data = json.load(file)
         results = pd.DataFrame(data["results"])
         for key, value in data["meta"].items():
@@ -85,6 +93,9 @@ def plot_accuracy(all_dfs) -> None:
     Args:
         all_dfs (dict): A dictionary where keys are DataFrame names and values
         are DataFrames.
+
+    Returns:
+        None
     """
     for _, df in all_dfs.items():
         grouped = df.groupby(["model", "revision"])
