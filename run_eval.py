@@ -4,7 +4,7 @@ import subprocess
 import sys
 
 
-def main():
+def main() -> None:
     """
     Run the evaluation script with specified dataset and model.
 
