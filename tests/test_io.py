@@ -31,7 +31,7 @@ def test_dict2json(tmp_path):
     test_dict = {"key": "value"}
     out_file = tmp_path / "test.json"
     dict2json(test_dict, out_file)
-    with open(out_file, "r") as fp:
+    with open(out_file, "r", encoding="utf-8") as fp:
         data = json.load(fp)
     assert data == test_dict
 
