@@ -19,6 +19,9 @@ from bin.analysis_tools import (
 
 @pytest.fixture
 def mock_json_data():
+    """
+    Fixture to mock JSON data from a sucessful model eval run.
+    """
     return {
         "results": [
             {"logprob_of_good_continuation": -1.0, "logprob_of_bad_continuation": -2.0},
@@ -38,7 +41,7 @@ def mock_json_data():
                 "test_model", "revision": "v1", "dataset": "test_dataset"}}',
 )
 @patch("bin.analysis_tools.path")
-def test_read_data_from_folder(mock_path, mock_open_fn, mock_listdir):
+def test_read_data_from_folder(mock_path, _, mock_listdir):
     """
     Test reading data from a folder containing JSON files.
     """
