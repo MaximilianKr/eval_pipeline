@@ -1,6 +1,14 @@
+"""
+Test suite for the analysis_tools module.
+
+This module contains tests for the functions in the analysis_tools module,
+including read_data_from_folder, compute_accuracy_metric, read_all_results,
+and plot_accuracy.
+"""
+
+from unittest.mock import patch, mock_open
 import pytest
 import pandas as pd
-from unittest.mock import patch, mock_open
 from bin.analysis_tools import (
     read_data_from_folder,
     compute_accuracy_metric,
@@ -30,7 +38,10 @@ def mock_json_data():
                 "test_model", "revision": "v1", "dataset": "test_dataset"}}',
 )
 @patch("bin.analysis_tools.path")
-def test_read_data_from_folder(mock_path, mock_open, mock_listdir):
+def test_read_data_from_folder(mock_path, mock_open_fn, mock_listdir):
+    """
+    Test reading data from a folder containing JSON files.
+    """
     mock_listdir.return_value = ["file1.json", "file2.json"]
     mock_path.join.side_effect = lambda *args: "/".join(args)
 
@@ -45,6 +56,9 @@ def test_read_data_from_folder(mock_path, mock_open, mock_listdir):
 
 
 def test_compute_accuracy_metric():
+    """
+    Test computing the accuracy metric for the DataFrame.
+    """
     df = pd.DataFrame(
         {
             "logprob_of_good_continuation": [-1.0, -1.5],
@@ -69,6 +83,9 @@ def test_read_all_results(
     mock_listdir,
     mock_json_data,
 ):
+    """
+    Test reading all results from base folder and computing accuracy metrics.
+    """
     mock_listdir.return_value = ["folder1", "folder2"]
     mock_path.isdir.return_value = True
     mock_path.join.side_effect = lambda *args: "/".join(args)
@@ -90,6 +107,9 @@ def test_read_all_results(
 
 @patch("bin.analysis_tools.plt.show")
 def test_plot_accuracy(mock_plt_show):
+    """
+    Test plotting accuracy for each model and revision.
+    """
     df = pd.DataFrame(
         {
             "logprob_of_good_continuation": [-1.0, -1.5, -1.0, -1.5],
