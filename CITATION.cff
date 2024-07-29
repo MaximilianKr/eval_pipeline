@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+title: >-
+  Evaluation Pipeline for Learning Dynamics of Discourse
+  Connectives in Large Language Models
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Maximilian
+    family-names: Krupop
+    email: krupop1@uni-potsdam.de
+    affiliation: University of Potsdam
+repository-code: 'https://github.com/MaximilianKr/eval_pipeline'
+abstract: >-
+  This pipeline evaluates language models by reading out the
+  conditional log probabilities for minimal pairs of
+  sentences. In each pair, one sentence is considered
+  correct, while the other contains a minimal violation. The
+  model is expected to assign a lower probability to the
+  incorrect sentence.
+keywords:
+  - discourse
+  - coherence
+  - connectives
+  - minimal pairs
+  - Large Language Models
+  - Pythia
+  - OLMo
+license: MIT
+version: '1.0'
+date-released: '2024-09-30'
