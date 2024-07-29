@@ -42,7 +42,9 @@ def run_experiment(
         # Sequence Log-probability, normalized by number of tokens
         # reduction = lambda x: x.mean(0).item()
         # see https://github.com/kanishkamisra/minicons
-        logprobs = model.sequence_score(stimuli, reduction=lambda x: x.mean(0).item())
+        logprobs = model.sequence_score(
+            stimuli, reduction=lambda x: x.mean(0).item()
+            )
 
         res = {
             "item_id": row.item_id,
@@ -53,6 +55,12 @@ def run_experiment(
             "logprob_of_bad_continuation": logprobs[1],
             "relation": row.category,
         }
+
+        # For cases where the dataset has a 'type' column for inter- or intra- 
+        # sentential connective continuations
+        if 'type' in row.index:
+            res['type'] = row.type
+
         results.append(res)
 
     output = {"meta": meta_data, "results": results}
@@ -77,7 +85,8 @@ def main() -> None:
     """
     if len(sys.argv) < 4:
         print(
-            "Usage: Incorrect call. Check the documentation on how to run the evaluation."
+            "Usage: Incorrect call. Check the documentation on how to run the \
+            evaluation."
         )
         sys.exit(1)
 
