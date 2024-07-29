@@ -51,6 +51,7 @@ def run_experiment(
             "bad_continuation": row.bad_continuation,
             "logprob_of_good_continuation": logprobs[0],
             "logprob_of_bad_continuation": logprobs[1],
+            "relation": row.category,
         }
         results.append(res)
 
