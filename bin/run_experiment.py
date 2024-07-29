@@ -56,7 +56,7 @@ def run_experiment(
             "relation": row.category,
         }
 
-        # For cases where the dataset has a 'type' column for inter- or intra- 
+        # For cases where the dataset has a 'type' column for inter- or intra-
         # sentential connective continuations
         if 'type' in row.index:
             res['type'] = row.type
