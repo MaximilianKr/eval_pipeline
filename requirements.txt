@@ -5,6 +5,7 @@ ipywidgets
 matplotlib
 numpy
 pandas
+pyarrow
 pytest
 torch
 torchvision
