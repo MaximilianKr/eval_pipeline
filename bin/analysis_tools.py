@@ -13,7 +13,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def read_data_from_folder(folder_path) -> pd.DataFrame:
+def read_data_from_folder(folder_path: path) -> pd.DataFrame:
     """
     Reads all JSON files from a specified folder and returns a single
     concatenated DataFrame.
@@ -44,7 +44,7 @@ def read_data_from_folder(folder_path) -> pd.DataFrame:
     return df
 
 
-def compute_accuracy_metric(df) -> pd.DataFrame:
+def compute_accuracy_metric(df: pd.DataFrame) -> pd.DataFrame:
     """
     Adds a column 'model_prefers_good_continuation' to the DataFrame
     indicating if the model prefers the good continuation.
@@ -119,14 +119,14 @@ def extract_model_size(model_name: str) -> float:
         size, suffix = match.groups()
         size = float(size)
         if suffix == 'b':
-            size *= 1000  # Convert billions to millions
+            size *= 1000
     else:
-        size = float('inf')  # Use infinity for non-matching model names
+        size = float('inf')
 
     return size
 
 
-def plot_accuracy(all_dfs) -> None:
+def plot_accuracy(all_dfs: dict) -> None:
     """
     Plots the accuracy for each model and revision for each DataFrame 
     separately.
@@ -148,7 +148,6 @@ def plot_accuracy(all_dfs) -> None:
         accuracies = []
         model_revisions = []
 
-        # Sort by model_size and numeric_revision
         grouped = sorted(grouped, key=lambda x: (x[0][3], x[0][2]))
 
         for (model_name, revision, _, _), group in grouped:
@@ -166,10 +165,12 @@ def plot_accuracy(all_dfs) -> None:
         plt.title(f"Model Accuracy for {title}")
         plt.xticks(rotation=45, ha="right")
 
-        for bar, accuracy in zip(bars, accuracies):
-            plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() - 0.05, 
-                     f'{accuracy:.3f}', ha='center', va='bottom', color='black', fontsize=10)
-        
+        for bar_container, accuracy in zip(bars, accuracies):
+            plt.text(
+                bar_container.get_x() + bar_container.get_width() / 2,
+                bar_container.get_height() - 0.05, f'{accuracy:.3f}',
+                ha='center', va='bottom', color='black', fontsize=10
+                )
+
         plt.tight_layout()
         plt.show()
-        
