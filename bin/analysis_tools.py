@@ -5,6 +5,7 @@ This module contains functions to read JSON data from folders,
 compute accuracy metrics, and plot the results.
 """
 
+import re
 import json
 from os import listdir, path
 
@@ -64,16 +65,19 @@ def compute_accuracy_metric(df) -> pd.DataFrame:
 def read_all_results(base_folder) -> dict[str, pd.DataFrame]:
     """
     Iterates over all folders in the base results folder, reads JSON files,
-    computes accuracy metrics, and returns a dictionary of DataFrames for each folder.
+    computes accuracy metrics, and returns a dictionary of DataFrames for 
+    each folder.
 
     Args:
         base_folder (str): The path to the base folder containing subfolders
         with JSON files.
 
     Returns:
-        dict: A dictionary where keys are folder names and values are DataFrames.
+        dict: A dictionary where keys are folder names and values are 
+        DataFrames.
     """
-    folders = [f for f in listdir(base_folder) if path.isdir(path.join(base_folder, f))]
+    folders = [f for f in listdir(base_folder) \
+               if path.isdir(path.join(base_folder, f))]
 
     all_dataframes = {}
 
@@ -86,9 +90,46 @@ def read_all_results(base_folder) -> dict[str, pd.DataFrame]:
     return all_dataframes
 
 
+def extract_numeric_revision(revision: str) -> int | float:
+    """
+    Extracts the numeric revision number from a string.
+    
+    Args:
+        revision (str): The revision string.
+        
+    Returns:
+        int or float: The numeric revision number.
+    """
+    match = re.search(r'step(\d+)', revision)
+    return int(match.group(1)) if match else float('inf')
+
+
+def extract_model_size(model_name: str) -> float:
+    """
+    Extracts the size of the model from the model name.
+
+    Args:
+        model_name (str): The name of the model.
+    
+    Returns:
+        float: The size of the model in millions of parameters.
+    """
+    match = re.search(r'(\d+\.?\d*)([mb])', model_name)
+    if match:
+        size, suffix = match.groups()
+        size = float(size)
+        if suffix == 'b':
+            size *= 1000  # Convert billions to millions
+    else:
+        size = float('inf')  # Use infinity for non-matching model names
+
+    return size
+
+
 def plot_accuracy(all_dfs) -> None:
     """
-    Plots the accuracy for each model and revision for each DataFrame separately.
+    Plots the accuracy for each model and revision for each DataFrame 
+    separately.
 
     Args:
         all_dfs (dict): A dictionary where keys are DataFrame names and values
@@ -98,10 +139,19 @@ def plot_accuracy(all_dfs) -> None:
         None
     """
     for _, df in all_dfs.items():
-        grouped = df.groupby(["model", "revision"])
+        df["numeric_revision"] = df["revision"].apply(extract_numeric_revision)
+        df["model_size"] = df["model"].apply(extract_model_size)
+
+        grouped = df.groupby(
+            ["model", "revision", "numeric_revision", "model_size"]
+            )
         accuracies = []
         model_revisions = []
-        for (model_name, revision), group in grouped:
+
+        # Sort by model_size and numeric_revision
+        grouped = sorted(grouped, key=lambda x: (x[0][3], x[0][2]))  
+
+        for (model_name, revision, _, _), group in grouped:
             accuracy = group["model_prefers_good_continuation"].mean()
             model_name = model_name.split("/")[-1]
             model_revision = f"{model_name}\n({revision})"
