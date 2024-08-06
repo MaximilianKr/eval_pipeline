@@ -149,7 +149,7 @@ def plot_accuracy(all_dfs) -> None:
         model_revisions = []
 
         # Sort by model_size and numeric_revision
-        grouped = sorted(grouped, key=lambda x: (x[0][3], x[0][2]))  
+        grouped = sorted(grouped, key=lambda x: (x[0][3], x[0][2]))
 
         for (model_name, revision, _, _), group in grouped:
             accuracy = group["model_prefers_good_continuation"].mean()
