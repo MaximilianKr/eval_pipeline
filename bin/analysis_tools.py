@@ -159,11 +159,17 @@ def plot_accuracy(all_dfs) -> None:
             model_revisions.append(model_revision)
 
         plt.figure(figsize=(12, 8))
-        plt.bar(model_revisions, accuracies, color="skyblue")
+        bars = plt.bar(model_revisions, accuracies, color="skyblue")
         plt.xlabel("Model (Revision)")
         plt.ylabel("Accuracy")
         title = df["dataset"].unique()[0].capitalize()
         plt.title(f"Model Accuracy for {title}")
         plt.xticks(rotation=45, ha="right")
+
+        for bar, accuracy in zip(bars, accuracies):
+            plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() - 0.05, 
+                     f'{accuracy:.3f}', ha='center', va='bottom', color='black', fontsize=10)
+        
         plt.tight_layout()
         plt.show()
+        
