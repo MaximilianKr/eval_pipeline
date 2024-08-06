@@ -1,8 +1,10 @@
 __pycache__
 HPC/
 .pytest_cache/
+bin/.ipynb_checkpoints/
 
 # Datasets not publicly shareable
 data/pandia
 data/ruby
 data/cong
+data/coherencegym
