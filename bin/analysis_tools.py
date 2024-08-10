@@ -77,7 +77,7 @@ def read_all_results(base_folder) -> dict[str, pd.DataFrame]:
         DataFrames.
     """
     folders = [f for f in listdir(base_folder) \
-               if path.isdir(path.join(base_folder, f)) 
+               if path.isdir(path.join(base_folder, f))
                and not f.startswith('.')]
 
     all_dataframes = {}
@@ -88,12 +88,12 @@ def read_all_results(base_folder) -> dict[str, pd.DataFrame]:
             df = read_data_from_folder(folder_path)
             df = compute_accuracy_metric(df)
             all_dataframes[f"df_{folder}"] = df
-        except Exception as e:
-            print(f"Error processing {folder_path}: {str(e)}")
+        except ValueError as e:
+            print(f"Value error in {folder_path}: {str(e)}")
 
     if not all_dataframes:
         print("No data was successfully processed.")
-        
+
     return all_dataframes
 
 
