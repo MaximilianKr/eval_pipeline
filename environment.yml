@@ -15,8 +15,8 @@ dependencies:
   - pyarrow
   - pytest
   - pytorch
-  - torchvision
-  - torchaudio
+  - scipy
+  - seaborn
   - pytorch-cuda=12.1
   - tqdm
   - transformers

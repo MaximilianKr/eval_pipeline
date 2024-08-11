@@ -7,9 +7,9 @@ numpy
 pandas
 pyarrow
 pytest
+scipy
+seaborn
 torch
-torchvision
-torchaudio
 tqdm
 transformers
 minicons
