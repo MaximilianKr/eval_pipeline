@@ -1,10 +1,10 @@
 # Minimal Pairs Eval Pipeline
 
-An evaluation pipeline for autoregressive language models using minimal pairs and log probabilities.
+An evaluation pipeline for autoregressive language models using direct probability measurement for minimal pairs.
 
 This pipeline evaluates language models by reading out the conditional log probabilities for minimal pairs of sentences. In each pair, one sentence is considered *correct*, while the other contains a minimal violation. The model is expected to assign a lower probability to the *incorrect* sentence.
 
-By using a sufficient number of test items targeting specific linguistic phenomena, the accuracy of the model’s probability assignments provides an indication of its linguistic capabilities and understanding of these phenomena. Assessing models at different training checkpoints should give an estimate whether these capabilities emerge during pre-training.
+By using a sufficient number of test items targeting specific linguistic phenomena, the accuracy of the model’s probability assignments provides an indication of its linguistic capabilities and understanding of these phenomena. Assessing models at different training checkpoints allows for analyzing learning dynamics of selected phenomena.
 
 ## Overview
 
@@ -70,9 +70,9 @@ conda activate pipe
 
 ## Datasets for evaluation
 
-The datasets for evaluation can be found in the [`data`](data) folder.
+An example dataset for testing can be found in the [`data`](data) folder.
 Additional datasets can easily be integrated and tested.
-Please refer to the [README.md](data/README.md) in the folder for more details.
+Please refer to the corresponding [README.md](data/README.md) in the folder for more details.
 
 ## Running experiments
 
@@ -92,30 +92,12 @@ python run_eval.py {dataset} {model} {optional: revision}
   python run_eval.py dtfit EleutherAI/pythia-14m
   ```
 
-- [connectives](data/connectives/README.md) (*work in progress*)
-
-  ```shell
-  python run_eval.py connectives allenai/OLMo-1B-hf
-  ```
-
 ## ToDo
 
-- [ ] **General**
-  - [ ] add test coverage / `pytest`
-
-- [ ] **Data**
-  - [ ] add more datasets and corresponding documentation
-    - [DisSent](https://github.com/windweller/DisExtract)
-    - [WinoGrande](https://leaderboard.allenai.org/winogrande/submissions/get-started)
-  - [ ] add *inter-* and *intra*-sentential conditions
-  - [ ] add phenomena under question to datasets (what is accuracy actually based on?)
-
-- [ ] **Results**
-  - [ ] add calculation for results (acc, prec, rec, f1)
-  - [ ] extend visualization of results (notebook)
-
-- [ ] **Optional** (low priority)
-  - [ ] add OpenAI support as upper bound for commercial models
+- [ ] **Performance**
+  - [ ] fix batch support
+- [ ] **Optional**
+  - [ ] add support for commercial APIs as upper bound
   - [ ] extract & analyze [contextual word embeddings](https://github.com/kanishkamisra/minicons/blob/master/examples/word_representations.md)
   - [ ] test other open models with checkpoints?
     - `togethercomputer/RedPajama-INCITE-7B-Base`
