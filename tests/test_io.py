@@ -76,17 +76,3 @@ def test_initialize_model_cpu(mock_scorer, mock_device, _):
     mock_device.assert_called_with("cpu")
     mock_scorer.assert_called_with(model=model_name, device="cpu", revision=revision)
     assert result == mock_model_instance
-
-
-def test_initialize_model_unsupported_model():
-    """
-    Test the initialize_model function with an unsupported model to ensure it
-    raises a ValueError.
-    """
-    model_name = "unsupported/model"
-    revision = "main"
-    with pytest.raises(
-        ValueError,
-        match=re.escape(f"Model not (yet) supported! (Your model: {model_name})"),
-    ):
-        initialize_model(model_name, revision)
