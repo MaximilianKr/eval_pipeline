@@ -13,7 +13,8 @@ from bin.io import initialize_model, timestamp, dict2json
 
 
 def run_experiment(
-    model: scorer.IncrementalLMScorer, meta_data: dict, file_out: str
+    model: scorer.IncrementalLMScorer, dataset: str, meta_data: dict,
+    file_out: str
 ) -> None:
     """
     Run the experiment for the given model and dataset and save the results to
@@ -21,18 +22,18 @@ def run_experiment(
 
     Args:
         model (scorer.IncrementalLMScorer): The model to evaluate.
+        dataset (str): The dataset name.
         meta_data (dict): Metadata about the model and dataset.
         file_out (str): The path to the output file.
 
     Returns:
         None
     """
-    dataset = meta_data["dataset"]
     df = pd.read_csv(f"./data/{dataset}/corpus.csv")
 
     results = []
 
-    print("Running experiment...")
+    print(f"Running experiment on dataset: {dataset}...")
 
     for _, row in tqdm(list(df.iterrows()), total=len(df.index)):
         good_instance = f"{row.prefix} {row.good_continuation}"
@@ -63,9 +64,12 @@ def run_experiment(
 
         results.append(res)
 
+    # Update metadata with dataset name
+    meta_data["dataset"] = dataset
     output = {"meta": meta_data, "results": results}
 
     dict2json(output, file_out)
+    print(f"Results saved to: {file_out}")
 
 
 def main() -> None:
@@ -74,8 +78,8 @@ def main() -> None:
     in the parent directory with following command line arguments:
         - model_name: The name of the model to evaluate.
         - revision: The revision of the model to evaluate.
-        - dataset: The dataset to evaluate the model on.
-        - file_out: The path to the output file.
+        - datasets: Space-separated list of datasets to evaluate the model on.
+        - file_out_template: Template for output file path.
 
     Args:
         None
@@ -83,26 +87,31 @@ def main() -> None:
     Returns:
         None
     """
-    if len(sys.argv) < 4:
+    if len(sys.argv) < 5:
         print(
-            "Usage: Incorrect call. Check the documentation on how to run the \
-            evaluation."
+            "Usage: Incorrect call. Expected usage:\n"
+            "python run_eval.py <dataset1> [dataset2] ... \
+                <model_name> <revision> <file_out_template>"
         )
         sys.exit(1)
 
-    model_name, revision, dataset, file_out = sys.argv[1:5]
+    model_name = sys.argv[1]
+    revision = sys.argv[2]
+    datasets = sys.argv[3:-1]  # Capture all datasets in between
+    file_out_template = sys.argv[-1]
 
-    # minicons IncrementalLMScorer
-    model = initialize_model(model_name, revision)
+    # Initialize the model once for all datasets
+    model = initialize_model(model_name, revision) # minicons IncrementalLMScorer
 
     meta_data = {
         "model": model_name,
         "revision": revision,
-        "dataset": dataset,
         "timestamp": timestamp(),
     }
 
-    run_experiment(model, meta_data, file_out)
+    for dataset in datasets:
+        file_out = file_out_template.format(dataset=dataset, model=model_name)
+        run_experiment(model, dataset, meta_data, file_out)
 
 
 if __name__ == "__main__":
