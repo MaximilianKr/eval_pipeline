@@ -39,10 +39,8 @@ def dict2json(d: dict, out_file: str) -> None:
 
 def initialize_model(model_name: str, revision: str) -> scorer.IncrementalLMScorer:
     """
-    Initializes the model for scoring. Currently supported model suites are
-        - EleutherAI/pythia-*
-        - allenai/OLMo-*-hf (only Huggingface variants)
-    Consult the documentation to access the available models from each suite.
+    Initializes the model for scoring. Supports all models supported by the
+    current Huggingface Transformers library.
 
     Args:
         model_name (str): The name of the model.
@@ -50,22 +48,20 @@ def initialize_model(model_name: str, revision: str) -> scorer.IncrementalLMScor
 
     Returns:
         scorer.IncrementalLMScorer: The initialized model scorer.
-
-    Raises:
-        ValueError: If the model name is not supported.
     """
     if torch.cuda.is_available():
-        device = torch.device("cuda")
-        print("Set device to CUDA")
+        if torch.cuda.device_count() > 1:
+            device = 'auto'  # gets passed as device_map to IncrementalLMScorer
+            print("Multiple GPUs detected! Using all available GPUs.")
+        else:
+            device = torch.device("cuda")
+            print("Set device to CUDA.")
     else:
         device = torch.device("cpu")
-        print("Using CPU (CUDA unavailable); adjust your expectations")
+        print("Using CPU (CUDA unavailable); adjust your expectations.")
 
-    if "pythia" in model_name or "allenai" in model_name:
-        model = scorer.IncrementalLMScorer(
+    model = scorer.IncrementalLMScorer(
             model=model_name, device=device, revision=revision
         )
-    else:
-        raise ValueError(f"Model not (yet) supported! (Your model: {model_name})")
 
     return model
