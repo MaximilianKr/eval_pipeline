@@ -76,17 +76,18 @@ Please refer to the corresponding [README.md](data/README.md) in the folder for 
 
 ## Running experiments
 
-Run the Python script and specify the [dataset](data/README.md), `model` and
-optionally `revision` (defaults to `main`, final checkpoint for all models).
+Run the Python script and specify **one or more** (space-separated) [datasets](data/README.md), the `model`, and optionally the `revision` (defaults to `main`, final checkpoint for all models).
 
-To access different intermediate training checkpoints (revisions), check either [Pythia](https://huggingface.co/collections/EleutherAI/pythia-scaling-suite-64fb5dfa8c21ebb3db7ad2e1) or [OLMo](https://huggingface.co/collections/allenai/olmo-suite-65aeaae8fe5b6b2122b46778) suites on Huggingface, select a model's *Files and versions* and choose a corresponding branch.
+To access different intermediate training checkpoints (revisions), check their
+Huggingface suites, select *Files and versions* and choose a corresponding branch.
+For instance, for [Pythia](https://huggingface.co/collections/EleutherAI/pythia-scaling-suite-64fb5dfa8c21ebb3db7ad2e1) or [OLMo](https://huggingface.co/collections/allenai/olmo-suite-65aeaae8fe5b6b2122b46778).
 
 ```shell
 # Template
-python run_eval.py {dataset} {model} {optional: revision}
+python run_eval.py {dataset} [dataset2] ... {model} {optional: revision}
 ```
 
-- [dtfit](data/dtfit/README.md)
+- Run a single dataset, here: [dtfit](data/dtfit/README.md)
 
   ```shell
   python run_eval.py dtfit EleutherAI/pythia-14m
