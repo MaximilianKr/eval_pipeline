@@ -11,6 +11,7 @@ from datetime import datetime
 from minicons import scorer
 import torch
 
+
 SEED = 42
 torch.manual_seed(SEED)
 torch.cuda.manual_seed(SEED)
@@ -51,7 +52,7 @@ def initialize_model(model_name: str, revision: str) -> scorer.IncrementalLMScor
     """
     if torch.cuda.is_available():
         if torch.cuda.device_count() > 1:
-            device = 'auto'  # gets passed as device_map to IncrementalLMScorer
+            device = 'auto'  # passed as 'device_map' to IncrementalLMScorer
             print("Multiple GPUs detected! Using all available GPUs.")
         else:
             device = torch.device("cuda")
@@ -61,7 +62,9 @@ def initialize_model(model_name: str, revision: str) -> scorer.IncrementalLMScor
         print("Using CPU (CUDA unavailable); adjust your expectations.")
 
     model = scorer.IncrementalLMScorer(
-            model=model_name, device=device, revision=revision
+            model=model_name, device=device, revision=revision,
+            torch_dtype=torch.bfloat16,
+            low_cpu_mem_usage=True
         )
 
     return model
