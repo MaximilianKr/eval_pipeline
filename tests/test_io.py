@@ -8,7 +8,6 @@ including timestamp, dict2json, and initialize_model.
 from unittest.mock import patch
 from datetime import datetime
 import json
-from io import open
 import pytest
 import torch
 from bin.io import dict2json, timestamp, initialize_model
