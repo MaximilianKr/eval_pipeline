@@ -26,16 +26,16 @@ def timestamp() -> str:
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-def dict2json(d: dict, out_file: str) -> None:
+def dict2json(input_dict: dict, out_file: str) -> None:
     """
     Writes a dictionary to a JSON file.
 
     Args:
-        d (dict): The dictionary to write.
+        input_dict (dict): The dictionary to write.
         out_file (str): The path to the output file.
     """
-    with open(out_file, "w", encoding="utf-8") as fp:
-        json.dump(d, fp, indent=2)
+    with open(out_file, "w", encoding="utf-8") as file:
+        json.dump(input_dict, file, indent=2)
 
 
 def initialize_model(model_name: str, revision: str) -> scorer.IncrementalLMScorer:
