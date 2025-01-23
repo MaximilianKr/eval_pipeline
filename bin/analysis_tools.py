@@ -5,15 +5,18 @@ This module contains functions to read JSON data from folders,
 compute accuracy metrics, and plot the results.
 """
 
-import re
 import json
-from os import listdir, path
+import os
+from os import listdir
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
-def read_data_from_folder(folder_path: path) -> pd.DataFrame:
+def read_data_from_folder(
+        folder_path: str, final_chkpt_only: bool = False
+        ) -> pd.DataFrame:
     """
     Reads all JSON files from a specified folder and returns a single
     concatenated DataFrame.
@@ -27,10 +30,17 @@ def read_data_from_folder(folder_path: path) -> pd.DataFrame:
     """
     all_data = []
 
-    files_to_read = [f for f in listdir(folder_path) if f.endswith(".json")]
+    if final_chkpt_only:
+        files_to_read = [
+            file for file in listdir(folder_path) if file.endswith("main.json")
+        ]
+    else:
+        files_to_read = [
+            file for file in listdir(folder_path) if file.endswith(".json")
+        ]
 
     for file_name in files_to_read:
-        file_path = path.join(folder_path, file_name)
+        file_path = os.path.join(folder_path, file_name)
         with open(file_path, "r", encoding="utf-8") as file:
             data = json.load(file)
         results = pd.DataFrame(data["results"])
@@ -41,143 +51,90 @@ def read_data_from_folder(folder_path: path) -> pd.DataFrame:
 
     df = pd.concat(all_data, ignore_index=True)
 
+    # Extract model name after the last '/'
+    df["model"] = df["model"].str.split("/").str[-1]
+
     return df
 
 
-def compute_accuracy_metric(df: pd.DataFrame) -> pd.DataFrame:
+def compute_accuracy(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Adds a column 'model_prefers_good_continuation' to the DataFrame
-    indicating if the model prefers the good continuation.
+    Computes accuracy metric indicating if the model prefers good continuation.
 
     Args:
-        df (pd.DataFrame): The DataFrame containing the results.
+        df (pd.DataFrame): DataFrame with log probabilities.
 
     Returns:
-        pd.DataFrame: The DataFrame with the new column added.
+        pd.DataFrame: Aggregated DataFrame with accuracy metric.
     """
+    required_columns = [
+        "logprob_of_good_continuation", "logprob_of_bad_continuation"
+        ]
+    for col in required_columns:
+        if col not in df.columns:
+            raise ValueError(f"Column '{col}' is missing in the dataset.")
+
     df["model_prefers_good_continuation"] = (
         df["logprob_of_good_continuation"] > df["logprob_of_bad_continuation"]
     )
 
+    df = df.groupby(
+        ["model", "revision", "type", "relation"], as_index=False
+        ).agg(accuracy=("model_prefers_good_continuation", "mean"))
+
     return df
 
-
-def read_all_results(base_folder) -> dict[str, pd.DataFrame]:
+def plot_bar_charts(df: pd.DataFrame, model_order: list) -> None:
     """
-    Iterates over all folders in the base results folder, reads JSON files,
-    computes accuracy metrics, and returns a dictionary of DataFrames for 
-    each folder.
+    Plots a bar chart of model accuracy using Seaborn.
 
     Args:
-        base_folder (str): The path to the base folder containing subfolders
-        with JSON files.
+        df (pd.DataFrame): DataFrame containing the columns:
+            - 'model': Model names.
+            - 'accuracy': Accuracy values.
+            - 'type': Evaluation type.
+            - 'relation': Evaluation relation.
+        model_order (list): List of model names in the desired order.
 
-    Returns:
-        dict: A dictionary where keys are folder names and values are 
-        DataFrames.
+    The function combines 'type' and 'relation' for color distinction,
+    orders models based on `model_order`, customizes axis labels,
+    and adjusts the figure layout for readability.
+
+    Example:
+        plot_bar_charts(df)
     """
-    folders = [f for f in listdir(base_folder) \
-               if path.isdir(path.join(base_folder, f))
-               and not f.startswith('.')]
+    df['type_relation'] = df['type'] + " - " + df['relation']
 
-    all_dataframes = {}
+    plt.figure(figsize=(19, 8))  # adjust size
 
-    for folder in folders:
-        folder_path = path.join(base_folder, folder)
-        try:
-            df = read_data_from_folder(folder_path)
-            df = compute_accuracy_metric(df)
-            all_dataframes[f"df_{folder}"] = df
-        except ValueError as e:
-            print(f"Value error in {folder_path}: {str(e)}")
+    sns.barplot(
+        data=df,
+        x="model",
+        y="accuracy",
+        hue="type_relation",
+        palette="muted",
+        dodge=True,
+        errorbar=None,
+        order=model_order
+    )
 
-    if not all_dataframes:
-        print("No data was successfully processed.")
+    plt.xlabel("Model", fontsize=22)
+    plt.ylabel("Accuracy", fontsize=22)
 
-    return all_dataframes
+    plt.ylim(0.1, 1.00)  # adjust y-range
 
+    plt.xticks(rotation=45, ha="right", fontsize=22)
+    plt.yticks(fontsize=20)
 
-def extract_numeric_revision(revision: str) -> int | float:
-    """
-    Extracts the numeric revision number from a string.
-    
-    Args:
-        revision (str): The revision string.
-        
-    Returns:
-        int or float: The numeric revision number.
-    """
-    match = re.search(r'step(\d+)', revision)
-    return int(match.group(1)) if match else float('inf')
+    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
 
+    plt.legend(
+        title="Type - Relation",
+        fontsize=22,
+        title_fontsize=22,
+        loc='center left',
+        bbox_to_anchor=(1, 0.5)
+    )
 
-def extract_model_size(model_name: str) -> float:
-    """
-    Extracts the size of the model from the model name.
-
-    Args:
-        model_name (str): The name of the model.
-    
-    Returns:
-        float: The size of the model in millions of parameters.
-    """
-    match = re.search(r'(\d+\.?\d*)([mb])', model_name)
-    if match:
-        size, suffix = match.groups()
-        size = float(size)
-        if suffix == 'b':
-            size *= 1000
-    else:
-        size = float('inf')
-
-    return size
-
-
-def plot_accuracy(all_dfs: dict) -> None:
-    """
-    Plots the accuracy for each model and revision for each DataFrame 
-    separately.
-
-    Args:
-        all_dfs (dict): A dictionary where keys are DataFrame names and values
-        are DataFrames.
-
-    Returns:
-        None
-    """
-    for _, df in all_dfs.items():
-        df["numeric_revision"] = df["revision"].apply(extract_numeric_revision)
-        df["model_size"] = df["model"].apply(extract_model_size)
-
-        grouped = df.groupby(
-            ["model", "revision", "numeric_revision", "model_size"]
-            )
-        accuracies = []
-        model_revisions = []
-
-        grouped = sorted(grouped, key=lambda x: (x[0][3], x[0][2]))
-
-        for (model_name, revision, _, _), group in grouped:
-            accuracy = group["model_prefers_good_continuation"].mean()
-            model_name = model_name.split("/")[-1]
-            model_revision = f"{model_name}\n({revision})"
-            accuracies.append(accuracy)
-            model_revisions.append(model_revision)
-
-        plt.figure(figsize=(12, 8))
-        bars = plt.bar(model_revisions, accuracies, color="skyblue")
-        plt.xlabel("Model (Revision)")
-        plt.ylabel("Accuracy")
-        title = df["dataset"].unique()[0].capitalize()
-        plt.title(f"Model Accuracy for {title}")
-        plt.xticks(rotation=45, ha="right")
-
-        for bar_container, accuracy in zip(bars, accuracies):
-            plt.text(
-                bar_container.get_x() + bar_container.get_width() / 2,
-                bar_container.get_height() - 0.05, f'{accuracy:.3f}',
-                ha='center', va='bottom', color='black', fontsize=10
-                )
-
-        plt.tight_layout()
-        plt.show()
+    plt.tight_layout()
+    plt.show()
