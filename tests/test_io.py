@@ -5,74 +5,106 @@ This module contains tests for the functions in the io module,
 including timestamp, dict2json, and initialize_model.
 """
 
-import json
-import re
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from datetime import datetime
+import json
+from io import open
 import pytest
-from bin.io import timestamp, dict2json, initialize_model
+import torch
+from bin.io import dict2json, timestamp, initialize_model
 
 
-def test_timestamp():
+def test_timestamp_format():
     """
-    Test the timestamp function to ensure it returns the current timestamp
-    in the correct format.
+    Test that the timestamp function returns a correctly formatted string.
     """
-    with patch("bin.io.datetime") as mock_datetime:
-        mock_datetime.now.return_value = datetime(2024, 10, 1, 0, 0, 0)
-        assert timestamp() == "2024-10-01 00:00:00"
+    time = timestamp()
+    try:
+        datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
+    except ValueError:
+        pytest.fail("Timestamp format is incorrect.")
 
 
 def test_dict2json(tmp_path):
     """
-    Test the dict2json function to ensure it correctly writes a dictionary
-    to a JSON file.
+    Test the dict2json function to ensure it correctly writes a dictionary to
+    a JSON file.
     """
-    test_dict = {"key": "value"}
-    out_file = tmp_path / "test.json"
-    dict2json(test_dict, out_file)
-    with open(out_file, "r", encoding="utf-8") as fp:
-        data = json.load(fp)
-    assert data == test_dict
+    test_dict = {"key": "value", "number": 42}
+    test_file = tmp_path / "test_output.json"
+
+    dict2json(test_dict, str(test_file))
+
+    with open(test_file, "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    ass = "The JSON file content does not match the original dictionary."
+    assert data == test_dict, ass
 
 
-@patch("bin.io.torch.cuda.is_available", return_value=True)
-@patch("bin.io.torch.device")
-@patch("bin.io.scorer.IncrementalLMScorer")
-def test_initialize_model_pythia(mock_scorer, mock_device, _):
+def test_initialize_model():
     """
-    Test the initialize_model function when using a supported model with CUDA
-    available.
+    Test the initialize_model function to ensure the correct model is
+    initialized with expected parameters.
     """
-    mock_device.return_value = "cuda"
-    model_name = "EleutherAI/pythia-6.7b"
+    model_name = "gpt2"
     revision = "main"
-    mock_model_instance = MagicMock()
-    mock_scorer.return_value = mock_model_instance
 
-    result = initialize_model(model_name, revision)
+    with patch("torch.cuda.is_available", return_value=False), \
+         patch("minicons.scorer.IncrementalLMScorer") as mock_model:
 
-    mock_device.assert_called_with("cuda")
-    mock_scorer.assert_called_with(model=model_name, device="cuda", revision=revision)
-    assert result == mock_model_instance
+        mock_model.return_value = "Mocked Model"
+        model = initialize_model(model_name, revision)
+
+        mock_model.assert_called_once_with(
+            model=model_name, device=torch.device("cpu"), revision=revision,
+            torch_dtype=torch.bfloat16, low_cpu_mem_usage=True
+        )
+        ass = "The initialized model does not match the mocked return value."
+        assert model == "Mocked Model", ass
 
 
-@patch("bin.io.torch.cuda.is_available", return_value=False)
-@patch("bin.io.torch.device")
-@patch("bin.io.scorer.IncrementalLMScorer")
-def test_initialize_model_cpu(mock_scorer, mock_device, _):
+def test_initialize_model_gpu():
     """
-    Test the initialize_model function when using a supported model with only
-    CPU available.
+    Test the initialize_model function for GPU availability and correct device
+    assignment.
     """
-    mock_device.return_value = "cpu"
-    model_name = "allenai/OLMo-1B-hf"
+    model_name = "gpt2"
     revision = "main"
-    mock_model_instance = MagicMock()
-    mock_scorer.return_value = mock_model_instance
 
-    result = initialize_model(model_name, revision)
+    with patch("torch.cuda.is_available", return_value=True), \
+         patch("torch.cuda.device_count", return_value=1), \
+         patch("minicons.scorer.IncrementalLMScorer") as mock_model:
 
-    mock_device.assert_called_with("cpu")
-    mock_scorer.assert_called_with(model=model_name, device="cpu", revision=revision)
-    assert result == mock_model_instance
+        mock_model.return_value = "Mocked GPU Model"
+        model = initialize_model(model_name, revision)
+
+        mock_model.assert_called_once_with(
+            model=model_name, device=torch.device("cuda"), revision=revision,
+            torch_dtype=torch.bfloat16, low_cpu_mem_usage=True
+        )
+        ass = "The initialized model does not match the mocked return value."
+        assert model == "Mocked GPU Model", ass
+
+
+def test_initialize_model_multi_gpu():
+    """
+    Test the initialize_model function for multi-GPU scenarios and correct
+    device mapping.
+    """
+    model_name = "gpt2"
+    revision = "main"
+
+    with patch("torch.cuda.is_available", return_value=True), \
+         patch("torch.cuda.device_count", return_value=2), \
+         patch("minicons.scorer.IncrementalLMScorer") as mock_model:
+
+        mock_model.return_value = "Mocked Multi-GPU Model"
+        model = initialize_model(model_name, revision)
+
+        mock_model.assert_called_once_with(
+            model=model_name, device='auto', revision=revision,
+            torch_dtype=torch.bfloat16, low_cpu_mem_usage=True
+        )
+        ass = "The initialized model does not match the mocked return value."
+        assert model == "Mocked Multi-GPU Model", ass
