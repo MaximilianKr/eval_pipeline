@@ -1,9 +1,9 @@
 """
 Module for running evaluation scripts with specified datasets and model.
 
-This script takes command line arguments for one or more datasets, a model, 
+This script takes command line arguments for one or more datasets, a model,
 and an optional revision, constructs the necessary paths, checks if the dataset
-directories exist, sets up the environment variables, and runs the experiment 
+directories exist, sets up the environment variables, and runs the experiment
 using the provided arguments.
 """
 
@@ -18,7 +18,7 @@ def main() -> None:
     Run the evaluation script with specified datasets and model.
 
     This function takes command line arguments for one or more datasets, model,
-    and optional revision. It constructs the necessary paths, checks if the 
+    and optional revision. It constructs the necessary paths, checks if the
     dataset directories exist, and sets up the environment variables. Finally,
     it runs the experiment using the provided arguments.
 
