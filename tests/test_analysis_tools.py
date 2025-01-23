@@ -49,14 +49,15 @@ def sample_json_folder(tmp_path):
     return str(folder)
 
 
-def test_read_data_from_folder(sample_json_folder):
+def test_read_data_from_folder(sample_folder_json):
     """
-    Tests the read_data_from_folder function for correct data loading and processing.
+    Tests the read_data_from_folder function for correct data loading and
+    processing.
 
     Args:
-        sample_json_folder (str): Path to the temporary folder with JSON test data.
+        sample_folder_json (str): Path to the temporary folder with JSON test data.
     """
-    df = read_data_from_folder(sample_json_folder)
+    df = read_data_from_folder(sample_folder_json)
     assert isinstance(df, pd.DataFrame)
     assert df.shape[0] == 2  # Expecting two rows from two files
     assert "model" in df.columns
@@ -118,7 +119,8 @@ def test_plot_bar_charts(mocker):
 
 def test_plot_bar_charts_invalid_order(mocker):
     """
-    Tests plot_bar_charts function to check if it handles an invalid model order correctly.
+    Tests plot_bar_charts function to check if it handles an invalid model
+    order correctly.
 
     Args:
         mocker: Pytest mocker fixture to mock plt.show() during testing.
