@@ -6,130 +6,133 @@ including read_data_from_folder, compute_accuracy_metric, read_all_results,
 and plot_accuracy.
 """
 
-from unittest.mock import patch, mock_open
+import json
 import pytest
 import pandas as pd
 from bin.analysis_tools import (
-    read_data_from_folder,
-    compute_accuracy_metric,
-    read_all_results,
-    plot_accuracy,
+    read_data_from_folder, compute_accuracy, plot_bar_charts
 )
 
 
 @pytest.fixture
-def mock_json_data():
+def sample_json_folder(tmp_path):
     """
-    Fixture to mock JSON data from a sucessful model eval.
+    Creates a temporary folder with sample JSON files for testing.
+
+    Args:
+        tmp_path (pathlib.Path): Temporary directory provided by pytest.
+
+    Returns:
+        str: The path to the created temporary folder.
     """
-    return {
+    folder = tmp_path / "test_data"
+    folder.mkdir()
+
+    sample_data_1 = {
         "results": [
-            {"logprob_of_good_continuation": -1.0, "logprob_of_bad_continuation": -2.0},
-            {"logprob_of_good_continuation": -1.5, "logprob_of_bad_continuation": -1.0},
+            {"logprob_of_good_continuation": 0.8, "logprob_of_bad_continuation": 0.2}
         ],
-        "meta": {"model": "test_model", "revision": "v1", "dataset": "test_dataset"},
+        "meta": {"model": "test_model/v1", "revision": "1", "type": "A", "relation": "X"}
+    }
+    sample_data_2 = {
+        "results": [
+            {"logprob_of_good_continuation": 0.6, "logprob_of_bad_continuation": 0.4}
+        ],
+        "meta": {"model": "test_model/v2", "revision": "2", "type": "B", "relation": "Y"}
     }
 
+    with open(folder / "file1_main.json", "w", encoding="utf-8") as file:
+        json.dump(sample_data_1, file)
+    with open(folder / "file2.json", "w", encoding="utf-8") as file:
+        json.dump(sample_data_2, file)
 
-@patch("bin.analysis_tools.listdir")
-@patch(
-    "bin.analysis_tools.open",
-    new_callable=mock_open,
-    read_data='{"results": [{"logprob_of_good_continuation": -1.0, \
-        "logprob_of_bad_continuation": -2.0},{"logprob_of_good_continuation": \
-            -1.5, "logprob_of_bad_continuation": -1.0}], "meta": {"model": \
-                "test_model", "revision": "v1", "dataset": "test_dataset"}}',
-)
-@patch("bin.analysis_tools.path")
-def test_read_data_from_folder(mock_path, _, mock_listdir):
+    return str(folder)
+
+
+def test_read_data_from_folder(sample_json_folder):
     """
-    Test reading data from a folder containing JSON files.
+    Tests the read_data_from_folder function for correct data loading and processing.
+
+    Args:
+        sample_json_folder (str): Path to the temporary folder with JSON test data.
     """
-    mock_listdir.return_value = ["file1.json", "file2.json"]
-    mock_path.join.side_effect = lambda *args: "/".join(args)
-
-    df = read_data_from_folder("mock_folder")
-
+    df = read_data_from_folder(sample_json_folder)
     assert isinstance(df, pd.DataFrame)
-    assert len(df) == 4
-    assert "logprob_of_good_continuation" in df.columns
-    assert "logprob_of_bad_continuation" in df.columns
+    assert df.shape[0] == 2  # Expecting two rows from two files
     assert "model" in df.columns
-    assert "revision" in df.columns
+    assert df["model"].iloc[0] == "v1"
+
+    df_final = read_data_from_folder(sample_json_folder, final_chkpt_only=True)
+    assert df_final.shape[0] == 1  # Only one file with 'main' in the name
+    assert df_final["model"].iloc[0] == "v1"
 
 
-def test_compute_accuracy_metric():
+def test_compute_accuracy():
     """
-    Test computing the accuracy metric for the DataFrame.
+    Tests the compute_accuracy function to ensure correct accuracy calculation
+    and handling of missing required columns.
     """
-    df = pd.DataFrame(
-        {
-            "logprob_of_good_continuation": [-1.0, -1.5],
-            "logprob_of_bad_continuation": [-2.0, -1.0],
-        }
-    )
+    data = {
+        "model": ["modelA", "modelA"],
+        "revision": ["1", "1"],
+        "type": ["A", "A"],
+        "relation": ["X", "X"],
+        "logprob_of_good_continuation": [0.8, 0.6],
+        "logprob_of_bad_continuation": [0.2, 0.7]
+    }
+    df = pd.DataFrame(data)
 
-    df = compute_accuracy_metric(df)
+    df_result = compute_accuracy(df)
 
-    assert "model_prefers_good_continuation" in df.columns
-    assert df["model_prefers_good_continuation"].tolist() == [True, False]
+    assert isinstance(df_result, pd.DataFrame)
+    assert "accuracy" in df_result.columns
+    assert df_result.loc[0, "accuracy"] == 1.0  # Both cases where good > bad
+
+    df_missing = df.drop(columns=["logprob_of_good_continuation"])
+    with pytest.raises(ValueError, match="Column 'logprob_of_good_continuation' is missing"):
+        compute_accuracy(df_missing)
 
 
-@patch("bin.analysis_tools.listdir")
-@patch("bin.analysis_tools.path")
-@patch("bin.analysis_tools.read_data_from_folder")
-@patch("bin.analysis_tools.compute_accuracy_metric")
-def test_read_all_results(
-    mock_compute_accuracy_metric,
-    mock_read_data_from_folder,
-    mock_path,
-    mock_listdir,
-    mock_json_data,  # pylint: disable=redefined-outer-name
-):
+def test_plot_bar_charts(mocker):
     """
-    Test reading all results from base folder and computing accuracy metrics.
+    Tests the plot_bar_charts function to ensure that it runs without errors
+    and produces a valid plot.
+
+    Args:
+        mocker: Pytest mocker fixture to mock plt.show() during testing.
     """
-    mock_listdir.return_value = ["folder1", "folder2"]
-    mock_path.isdir.return_value = True
-    mock_path.join.side_effect = lambda *args: "/".join(args)
-    mock_df = pd.DataFrame(mock_json_data["results"])
-    mock_df["model"] = mock_json_data["meta"]["model"]
-    mock_df["revision"] = mock_json_data["meta"]["revision"]
-    mock_df["dataset"] = mock_json_data["meta"]["dataset"]
-    mock_read_data_from_folder.return_value = mock_df
-    mock_compute_accuracy_metric.return_value = mock_df
+    mocker.patch("matplotlib.pyplot.show")
 
-    all_results = read_all_results("base_folder")
+    data = {
+        "model": ["ModelA", "ModelB"],
+        "accuracy": [0.85, 0.78],
+        "type": ["Type1", "Type2"],
+        "relation": ["Rel1", "Rel2"]
+    }
+    df = pd.DataFrame(data)
+    model_order = ["ModelA", "ModelB"]
 
-    assert isinstance(all_results, dict)
-    assert len(all_results) == 2
-    assert "df_folder1" in all_results
-    assert "df_folder2" in all_results
-    assert isinstance(all_results["df_folder1"], pd.DataFrame)
+    plot_bar_charts(df, model_order)
+    assert True  # If no exceptions occur, the test passes
 
 
-@patch("bin.analysis_tools.plt.show")
-def test_plot_accuracy(mock_plt_show):
+def test_plot_bar_charts_invalid_order(mocker):
     """
-    Test plotting accuracy for each model and revision.
+    Tests plot_bar_charts function to check if it handles an invalid model order correctly.
+
+    Args:
+        mocker: Pytest mocker fixture to mock plt.show() during testing.
     """
-    df = pd.DataFrame(
-        {
-            "logprob_of_good_continuation": [-1.0, -1.5, -1.0, -1.5],
-            "logprob_of_bad_continuation": [-2.0, -1.0, -2.0, -1.0],
-            "model": [
-                "test_model/test1",
-                "test_model/test1",
-                "test_model/test2",
-                "test_model/test2",
-            ],
-            "revision": ["v1", "v1", "v2", "v2"],
-            "dataset": ["test_dataset", "test_dataset", "test_dataset", "test_dataset"],
-        }
-    )
-    df = compute_accuracy_metric(df)
-    all_dfs = {"df_test": df}
+    mocker.patch("matplotlib.pyplot.show")
 
-    plot_accuracy(all_dfs)
+    data = {
+        "model": ["ModelA", "ModelB"],
+        "accuracy": [0.85, 0.78],
+        "type": ["Type1", "Type2"],
+        "relation": ["Rel1", "Rel2"]
+    }
+    df = pd.DataFrame(data)
+    model_order = ["ModelC", "ModelD"]  # Non-existent models in order
 
-    assert mock_plt_show.called
+    with pytest.raises(ValueError):
+        plot_bar_charts(df, model_order)
