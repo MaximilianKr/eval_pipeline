@@ -76,7 +76,7 @@ Please refer to the corresponding [README.md](data/README.md) in the folder for 
 
 ## Running experiments
 
-Run the Python script and specify **one or more** (space-separated) [datasets](data/README.md), the `model`, and optionally the `revision` (defaults to `main`, final checkpoint for all models).
+Run the Python script and specify **one or more** (space-separated) [datasets](data/README.md), the `model`, and optionally the `--revision` (defaults to `main`, final checkpoint for all models).
 
 To access different intermediate training checkpoints (revisions), check their
 Huggingface suites, select *Files and versions* and choose a corresponding branch.
@@ -84,13 +84,19 @@ For instance, for [Pythia](https://huggingface.co/collections/EleutherAI/pythia-
 
 ```shell
 # Template
-python run_eval.py {dataset} [dataset2] ... {model} {optional: revision}
+python run_eval.py {dataset} [dataset2] ... {model} {optional: --revision}
 ```
 
-- Run a single dataset, here: [dtfit](data/dtfit/README.md)
+- Run a single dataset, here: [dtfit](data/dtfit/README.md) on the `main` checkpoint (no revision specified):
 
   ```shell
   python run_eval.py dtfit EleutherAI/pythia-14m
+  ```
+
+- Run the same dataset with a specified revision / checkpoint:
+
+  ```shell
+  python run_eval.py dtfit EleutherAI/pythia-14m --revision step2000
   ```
 
 ## ToDo
