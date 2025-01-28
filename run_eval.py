@@ -45,9 +45,8 @@ def main() -> None:
               e.g., 'EleutherAI/pythia-14m'.",
     )
     parser.add_argument(
-        "revision",
+        "--revision",
         type=str,
-        nargs="?",
         default="main",
         help="Optional: model revision or specific checkpoint, default is\
               'main'. Check model-specific revision naming on Huggingface.",
@@ -60,7 +59,7 @@ def main() -> None:
     revision = args.revision
 
     if "/" in model:
-        save_name = model.split("/")[1]
+        save_name = model.split("/")[-1]
     else:
         print("Error: MODEL should be in the format 'namespace/modelname'.")
         sys.exit(1)
@@ -87,10 +86,6 @@ def main() -> None:
             # Create results directory if it doesn't exist
             result_dir = os.path.join(script_dir, "results", dataset)
             os.makedirs(result_dir, exist_ok=True)
-
-            # Prepare output file paths
-            # file_out = os.path.join(result_dir, f"{save_name}_{revision}.json")
-            # output_paths.append(file_out)
 
     if not valid_datasets:
         print("Error: No valid dataset directories found. Exiting.")
